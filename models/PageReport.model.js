@@ -34,7 +34,12 @@ const PageReportSchema = new mongoose.Schema({
             }
         }
     }]
-})
+}, { timestamps: true })
+
+PageReportSchema.index({ ReportID: 1 })
+
+PageReport.find({ ReportID: reportId })
+          .sort({ RiskScore: -1 })
 
 const PageReport = mongoose.model('PageReport',PageReportSchema)
 
