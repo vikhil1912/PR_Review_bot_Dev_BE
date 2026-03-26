@@ -2,8 +2,7 @@ import mongoose from "mongoose"
 
 const PRReportSchema = mongoose.Schema({
     UserID:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User',
+        type:String,
         required:true
     },
     Metadata:{
