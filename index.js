@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
 import { clerkMiddleware, requireAuth } from "@clerk/express";
+import ReportRouter from "./routes/Report.route.js";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -12,6 +13,12 @@ const port = process.env.PORT || 5000;
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 app.use(clerkMiddleware());
+
+app.use("/api/Reports",requireAuth(),ReportRouter);
+
+app.get("/", (req, res) => {
+  res.send("Server is Live");
+});
 
 if (process.env.NODE_ENV === "development") {
   app.use(
