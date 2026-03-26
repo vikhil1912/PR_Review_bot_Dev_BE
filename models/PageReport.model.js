@@ -6,6 +6,10 @@ const PageReportSchema = new mongoose.Schema({
         ref:"PRReport",
         required:true
     },
+    Name:{
+        type:String,
+        required:true
+    },
     Summary:{
         type:String,
         required:true
