@@ -2,10 +2,10 @@ import PRReport from "../models/PRReport.model.js"
 
 export const getFullReportByPRReportId = async (req, res) => {
   try {
-    const { PRReportId } = req.params;
+    const { id } = req.params;
     const UserID = req.auth.userId;
 
-    const report = await PRReport.findOne({ _id: PRReportId, UserID })
+    const report = await PRReport.findOne({ _id: id, UserID })
 
     if (!report) {
       return res.status(404).json({
