@@ -8,31 +8,46 @@ const PRReportSchema = mongoose.Schema({
     Metadata:{
         PRUrl:{
             type:String,required:true
-        },
-        Owner:{
-            type:String,
-            required:true
-        },
-        repository:{
-            type:String,required:true
-        },
-        PRno:{
-            type:Number,required:true
         }
     },
-    PageReports:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'PageReport'
-    }]
+    Issues:[{
+        file:{
+            type:String,required:true
+        },
+        line:{
+            type:Number,required:true
+        },
+        code:{
+            type:String,required:true
+        },
+        issue:{
+            type:String,required:true
+        },
+        fix:{
+            type:String,required:true
+        },
+        type:{
+            type:String,
+            enum:["bug","security","performance"]
+        },
+        severity:{
+            type:String,
+            enum: ["low", "medium", "high"],
+            required:true
+        }
+    }],
+    risk_score:{
+        type:Number,default:0
+    },
+    risk_summary:{
+        type:String
+    },
+    final_summary:{
+        type:String
+    }
 }, { timestamps: true })
 
 PRReportSchema.index({ UserID: 1 })
-
-PRReportSchema.index({
-  "Metadata.Owner": 1,
-  "Metadata.repository": 1,
-  "Metadata.PRno": 1
-})
 
 PRReportSchema.index({ UserID: 1, createdAt: -1 })
 

@@ -1,4 +1,3 @@
-import History from "../models/History.model.js";
 import PRReport from "../models/PRReport.model.js"
 
 export const getFullReportByPRReportId = async (req, res) => {
@@ -7,7 +6,6 @@ export const getFullReportByPRReportId = async (req, res) => {
     const UserID = req.auth.userId;
 
     const report = await PRReport.findOne({ _id: PRReportId, UserID })
-      .populate("PageReports")
 
     if (!report) {
       return res.status(404).json({
@@ -31,20 +29,14 @@ export const getFullReportByPRReportId = async (req, res) => {
 
 export const getAllReportsByUserId = async (req, res) => {
   try {
-    const UserID = req.user.id;
-
-    const history = await History.findOne({ UserID })
-    
-    if (!history) {
-      return res.status(404).json({
-        success: false,
-        message: "No history found for this user",
-      });
-    }
+    const UserID = req.auth.userId;
+    const reports = await PRReport.find({ UserID })
+      .sort({ createdAt: -1 })
+      .select("Metadata risk_score risk_summary createdAt")
 
     return res.status(200).json({
       success: true,
-      data: history.PRReports || [],
+      data: reports,
     });
   } catch (error) {
     return res.status(500).json({
@@ -54,3 +46,33 @@ export const getAllReportsByUserId = async (req, res) => {
     });
   }
 };
+
+export const createReport = async (req, res) => {
+  try {
+    const UserID = req.auth.userId;
+    const { pr_url } = req.body;
+
+    const pythonResponse = await axios.post("http://localhost:8000/analyze", { pr_url })
+    const { issues, risk_score, risk_summary, final_summary } = pythonResponse.data
+
+    const report = await PRReport.create({
+      UserID,
+      Metadata: { PRUrl: pr_url },
+      Issues: issues,
+      risk_score,
+      risk_summary,
+      final_summary
+    })
+
+    return res.status(201).json({
+      success: true,
+      data: report
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message
+    })
+  }
+}
