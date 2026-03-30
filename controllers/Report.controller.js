@@ -1,9 +1,11 @@
+import { log } from "console";
 import PRReport from "../models/PRReport.model.js"
+import axios from "axios"
 
 export const getFullReportByPRReportId = async (req, res) => {
   try {
     const { id } = req.params;
-    const UserID = req.auth.userId;
+    const UserID = req.auth().userId;
 
     const report = await PRReport.findOne({ _id: id, UserID })
 
@@ -29,7 +31,7 @@ export const getFullReportByPRReportId = async (req, res) => {
 
 export const getAllReportsByUserId = async (req, res) => {
   try {
-    const UserID = req.auth.userId;
+    const UserID = req.auth().userId;    
     const reports = await PRReport.find({ UserID })
       .sort({ createdAt: -1 })
       .select("Metadata risk_score risk_summary createdAt")
@@ -49,12 +51,10 @@ export const getAllReportsByUserId = async (req, res) => {
 
 export const createReport = async (req, res) => {
   try {
-    const UserID = req.auth.userId;
+    const UserID = req.auth().userId;
     const { pr_url } = req.body;
-
     const pythonResponse = await axios.post("http://localhost:8000/analyze", { pr_url })
     const { issues, risk_score, risk_summary, final_summary } = pythonResponse.data
-
     const report = await PRReport.create({
       UserID,
       Metadata: { PRUrl: pr_url },
@@ -69,6 +69,8 @@ export const createReport = async (req, res) => {
       data: report
     })
   } catch (error) {
+    console.log(error.message);
+    
     return res.status(500).json({
       success: false,
       message: "Internal server error",
