@@ -10,24 +10,20 @@ import ReportRouter from "./routes/Report.route.js";
 const app = express();
 const port = process.env.PORT || 5000;
 
+app.use(cors({
+  origin: "http://localhost:5173",  // your React dev server
+  credentials: true
+}));
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 app.use(clerkMiddleware());
 
 app.use("/api/Reports",requireAuth(),ReportRouter);
-
+app.set("strict routing", false)  
 app.get("/", (req, res) => {
   res.send("Server is Live");
 });
 
-if (process.env.NODE_ENV === "development") {
-  app.use(
-    cors({
-      origin: process.env.CLIENT_URL.replace(/\/$/, ""),
-      credentials: true,
-    })
-  );
-}
 
 
 app.listen(port, () => {
