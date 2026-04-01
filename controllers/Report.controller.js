@@ -1,5 +1,6 @@
 import { log } from "console";
 import PRReport from "../models/PRReport.model.js"
+import "dotenv/config.js"
 import axios from "axios"
 
 export const getFullReportByPRReportId = async (req, res) => {
@@ -53,7 +54,7 @@ export const createReport = async (req, res) => {
   try {
     const UserID = req.auth().userId;
     const { pr_url } = req.body;
-    const pythonResponse = await axios.post("http://localhost:8000/analyze", { pr_url })
+    const pythonResponse = await axios.post(process.env.CLIENT_URL, { pr_url })
     const { issues, risk_score, risk_summary, final_summary } = pythonResponse.data
     const report = await PRReport.create({
       UserID,

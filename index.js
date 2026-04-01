@@ -11,7 +11,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: "http://localhost:5173",  // your React dev server
+  origin: process.env.CLIENT_URL,  // your React dev server
   credentials: true
 }));
 app.use(express.json({ limit: "10mb" }));
