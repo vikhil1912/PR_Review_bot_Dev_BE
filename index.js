@@ -18,8 +18,8 @@ app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 app.use(clerkMiddleware());
 
-app.use("/api/Reports",requireAuth(),ReportRouter);
 app.set("strict routing", false)  
+app.use("/api/Reports",requireAuth(),ReportRouter);
 app.get("/", (req, res) => {
   res.send("Server is Live");
 });
