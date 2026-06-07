@@ -2,11 +2,19 @@ import { log } from "console";
 import PRReport from "../models/PRReport.model.js"
 import "dotenv/config.js"
 import axios from "axios"
+import { getAuth } from "@clerk/express";
 
 export const getFullReportByPRReportId = async (req, res) => {
   try {
     const { id } = req.params;
-    const UserID = req.auth().userId;
+    const { userId: UserID } = getAuth(req);
+
+if (!UserID) {
+  return res.status(401).json({
+    success: false,
+    message: "Unauthorized",
+  });
+}
 
     const report = await PRReport.findOne({ _id: id, UserID })
 
