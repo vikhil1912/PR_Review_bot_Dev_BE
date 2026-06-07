@@ -40,7 +40,14 @@ if (!UserID) {
 
 export const getAllReportsByUserId = async (req, res) => {
   try {
-    const UserID = req.auth().userId;    
+    const { userId: UserID } = getAuth(req);
+
+if (!UserID) {
+  return res.status(401).json({
+    success: false,
+    message: "Unauthorized",
+  });
+}
     const reports = await PRReport.find({ UserID })
       .sort({ createdAt: -1 })
       .select("Metadata risk_score risk_summary createdAt")
@@ -60,7 +67,14 @@ export const getAllReportsByUserId = async (req, res) => {
 
 export const createReport = async (req, res) => {
   try {
-    const UserID = req.auth().userId;
+    const { userId: UserID } = getAuth(req);
+
+if (!UserID) {
+  return res.status(401).json({
+    success: false,
+    message: "Unauthorized",
+  });
+}
     const { pr_url } = req.body;
     const pythonResponse = await axios.post(process.env.PYTHON_URL, { pr_url })
     const { issues, risk_score, risk_summary, final_summary } = pythonResponse.data
